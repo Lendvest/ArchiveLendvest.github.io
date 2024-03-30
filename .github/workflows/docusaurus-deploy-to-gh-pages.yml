@@ -14,12 +14,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -31,16 +32,30 @@ jobs:
       - name: Build Docusaurus Site
         run: npm run build
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v3
-
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v1
         with:
           path: build
+          name: github-pages-artifact  # This is optional, defaults to "github-pages"
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      # The url output will be available after deployment.
+      # It usually follows the pattern https://<username>.github.io/<repository> 
+
+    steps:
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
-        environment:
-          name: github-pages
-          url: ${{ steps.deploy.outputs.page_url }}
+        id: deployment
+        uses: actions/deploy-pages@v4
+        # Ensure you use the latest version or one that is compatible with your GitHub Enterprise version if applicable.
+
+      # Use the output from the deployment step
+      - name: Get the deployed page URL
+        run: echo "The deployed site URL is ${{ steps.deployment.outputs.page_url }}"
