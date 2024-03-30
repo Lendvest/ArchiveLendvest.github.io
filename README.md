@@ -1,6 +1,6 @@
 # Website
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+[Documentation Link](https://precious-alpaca-1333dc.netlify.app/)
 
 ### Installation
 
