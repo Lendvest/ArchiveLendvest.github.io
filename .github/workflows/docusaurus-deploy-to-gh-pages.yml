@@ -32,30 +32,30 @@ jobs:
       - name: Build Docusaurus Site
         run: npm run build
 
-      - name: Upload GitHub Pages Artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3.0.1
         with:
-          path: build
-          name: github-pages-artifact  # This is optional, defaults to "github-pages"
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      # The url output will be available after deployment.
-      # It usually follows the pattern https://<username>.github.io/<repository> 
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-        # Ensure you use the latest version or one that is compatible with your GitHub Enterprise version if applicable.
-
-      # Use the output from the deployment step
-      - name: Get the deployed page URL
-        run: echo "The deployed site URL is ${{ steps.deployment.outputs.page_url }}"
+          # Artifact name
+          name: github-pages
+          # Path of the directory containing the static assets.
+          path: _site/
+          # Duration after which artifact will expire in days.
+          retention-days: 1
+          
+      - name: Deploy GitHub Pages site      
+        uses: actions/deploy-pages@v4.0.5
+        with:
+          # GitHub token
+          token: ${{ github.token }}
+          # Time in milliseconds after which to timeout and cancel the deployment (default: 10 minutes)
+          timeout: 600000
+          # Maximum number of status report errors before cancelling a deployment (default: 10)
+          error_count: 10
+          # Time in milliseconds between two deployment status report (default: 5 seconds)
+          reporting_interval: 5000
+          # Name of the artifact to deploy
+          artifact_name: github-pages
+          # Is this attempting to deploy a pull request as a GitHub Pages preview site? (NOTE: This feature is only in alpha currently and is not available to the public!)
+          preview: false
+            
+ 
